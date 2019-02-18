@@ -28,29 +28,32 @@ define([
         // });
 
         this.sceneView = new SceneView({
-            container: viewDiv,
-            map: this.map,
-            qualityProfile: "high",
-            environment: {
-              starsEnabled: false,
-              atmosphereEnabled: false,
-              lighting: {
-                date: "June 20 2019 14:00:00 GMT-5:00",
-                directShadowsEnabled: true,
-                cameraTrackingEnabled: true,
-                ambientOcclusionEnabled: false
-              }
-            },
-            camera: {
-              position: {
-                spatialReference: { latestWkid: 3857, wkid: 102100 },
-                x: -8240232.016157305,
-                y: 4967521.10016462,
-                z: 542.5048153763637
-              },
-              heading: 60.806845587349486,
-              tilt: 70.00852977355764
-            }
+        	container: viewDiv,
+        	map: this.map,
+        	qualityProfile: "high",
+        	environment: {
+        		starsEnabled: false,
+        		atmosphereEnabled: false,
+        		lighting: {
+        			date: "Sun Apr 21 2019 13:00:00 GMT-0500",
+        			directShadowsEnabled: true,
+        			cameraTrackingEnabled: true,
+        			ambientOcclusionEnabled: false
+        		}
+        	},
+        	camera: {
+        		position: {
+        			spatialReference: {
+        				latestWkid: 3857,
+        				wkid: 102100
+        			},
+        			x: -8239057.992745476,
+        			y: 4967434.558005711,
+        			z: 623.6271769823506
+        		},
+        		heading: 4.988282997022848,
+        		tilt: 49.755767869762856
+        	}
         });
         window.view = this.sceneView;
 
@@ -103,7 +106,6 @@ define([
             style = Utils.stringReplace(style, '"text-color":"' + array[i] + '"', '"text-color":"' + palette.colours[3] + '"');
             style = Utils.stringReplace(style, '"text-halo-color":"' + array[i] + '"', '"text-halo-color":"' + palette.colours[4] + '"');
             style = Utils.stringReplace(style, '"line-color":"' + array[i] + '"', '"line-color":"' + palette.colours[2] + '"');
-
         }
         var newStyle = JSON.parse(style);
         palette.storeStyle(style);
@@ -118,7 +120,7 @@ define([
               {
                 type: "fill",
                 material: {
-                  color: dict[array[12]],
+                  color: dict[array[13]],
                   colorMixMode: "replace"
                 },
                 edges: {
