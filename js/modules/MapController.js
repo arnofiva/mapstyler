@@ -1,6 +1,6 @@
 define([
     "esri/Map",
-    //"esri/views/MapView",
+    "esri/views/MapView",
     "esri/views/SceneView",
     "esri/layers/VectorTileLayer",
     "esri/views/layers/LayerView",
@@ -8,11 +8,11 @@ define([
     "esri/widgets/Search",
     "modules/Utils",
     "dojo/domReady!"
-], function(Map, SceneView, VectorTileLayer, LayerView, Layer, Search, Utils) {
+], function(Map, MapView, SceneView, VectorTileLayer, LayerView, Layer, Search, Utils) {
 
     //Constructor for a new MapController
     var MapController = function (viewDiv){
-        this.viewDiv = viewDiv;
+        this.sceneViewDiv = viewDiv;
     }
 
     //Builds the default map
@@ -22,7 +22,12 @@ define([
         var item = "https://arcgis.com/sharing/rest/content/items/5ad3948260a147a993ef4865e3fad476";
         this.map = new Map();
 
-        this.view = new SceneView({
+        // this.mapView = new MapView({
+        //   container: viewDiv,
+        //   map: this.map,
+        // });
+
+        this.sceneView = new SceneView({
             container: viewDiv,
             map: this.map,
             qualityProfile: "high",
@@ -30,7 +35,8 @@ define([
               starsEnabled: false,
               atmosphereEnabled: false,
               lighting: {
-                directShadowsEnabled: false,
+                date: "June 20 2019 14:00:00 GMT-5:00",
+                directShadowsEnabled: true,
                 cameraTrackingEnabled: true,
                 ambientOcclusionEnabled: false
               }
@@ -46,13 +52,13 @@ define([
               tilt: 70.00852977355764
             }
         });
-        window.view = this.view;
+        window.view = this.sceneView;
 
         var searchWidget = new Search({
-            view: this.view
+            view: this.sceneView
         });
 
-        this.view.ui.add(searchWidget, {
+        this.sceneView.ui.add(searchWidget, {
             position: "top-right",
             index: 0
         });
@@ -124,7 +130,7 @@ define([
             ]
           }
         };
-        this.view.environment.background = {
+        this.sceneView.environment.background = {
           type: "color",
           color: palette.colours[2],
         };
