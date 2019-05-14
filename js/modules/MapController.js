@@ -11,89 +11,82 @@ define([
 ], function(Map, MapView, SceneView, VectorTileLayer, LayerView, Layer, Search, Utils) {
 
     //Constructor for a new MapController
-    var MapController = function (viewDiv){
-        this.sceneViewDiv = viewDiv;
+    var MapController = function(viewDiv, showGlobe) {
+        this.viewDiv = viewDiv;
+        this.showGlobe = showGlobe;
     }
 
     //Builds the default map
-    MapController.prototype.buildMap = function(){
+    MapController.prototype.buildMap = function() {
         var that = this;
         var mapWait = $.Deferred();
         var item = "https://arcgis.com/sharing/rest/content/items/5ad3948260a147a993ef4865e3fad476";
         this.map = new Map();
 
-        // this.mapView = new MapView({
-        //   container: viewDiv,
-        //   map: this.map,
-        // });
-
-        this.sceneView = new SceneView({
-        	container: viewDiv,
-        	map: this.map,
-        	qualityProfile: "high",
-        	environment: {
-        		starsEnabled: false,
-        		atmosphereEnabled: false,
-        		lighting: {
-        			date: "Sun Apr 21 2019 13:00:00 GMT-0500",
-        			directShadowsEnabled: true,
-        			cameraTrackingEnabled: true,
-        			ambientOcclusionEnabled: false
-        		}
-        	},
-        	camera: {
-        		position: {
-        			spatialReference: {
-        				latestWkid: 3857,
-        				wkid: 102100
-        			},
-        			x: -8239057.992745476,
-        			y: 4967434.558005711,
-        			z: 623.6271769823506
-        		},
-        		heading: 4.988282997022848,
-        		tilt: 49.755767869762856
-        	}
-        });
-        window.view = this.sceneView;
+        if (this.showGlobe) {
+            this.view = new SceneView({
+                container: this.viewDiv,
+                map: this.map,
+                qualityProfile: "high",
+                environment: {
+                    starsEnabled: false,
+                    atmosphereEnabled: false,
+                    lighting: {
+                        directShadowsEnabled: true,
+                        cameraTrackingEnabled: true,
+                        ambientOcclusionEnabled: false
+                    }
+                },
+                camera: {
+                    position: {
+                        spatialReference: {
+                            latestWkid: 3857,
+                            wkid: 102100
+                        },
+                        x: 1869631.2239427697,
+                        y: 3387060.2726709265,
+                        z: 2539427.781257158
+                    },
+                    heading: 341.57308435639214,
+                    tilt: 31.590472319751388
+                }
+            });
+        } else {
+            this.view = new MapView({
+                container: viewDiv,
+                map: this.map,
+                zoom: 13,
+                center: [-0.010557, 51.495997]
+            });
+        }
 
         var searchWidget = new Search({
-            view: this.sceneView
+            view: this.view
         });
 
-        this.sceneView.ui.add(searchWidget, {
+        this.view.ui.add(searchWidget, {
             position: "top-right",
             index: 0
         });
 
         var tileLyr = new VectorTileLayer({
             url: item + "/resources/styles/root.json",
-            opacity:1
+            opacity: 1
         });
 
         this.map.add(tileLyr);
 
-        Layer.fromPortalItem({
-          portalItem: {
-            id: "2e0761b9a4274b8db52c4bf34356911e"
-          }
-        }).then(layer => {
-          this.buildingLayer = layer;
-          this.map.add(layer);
-        });
-
-        tileLyr.on("layerview-create", function (evt) {
+        tileLyr.on("layerview-create", function(evt) {
             layerView = evt.layerView;
             //Set the original JSON style as a variable. We will need to revert to this each time we update the map's style
             that.originalStyle = JSON.stringify(layerView.layer.styleRepository.styleJSON);
-
             mapWait.resolve();
         });
         return mapWait.promise();
     }
 
     //Takes a palette object and applies it to the map
-    MapController.prototype.applyPalette = function(palette){
+    MapController.prototype.applyPalette = function(palette) {
         var array = Utils.getBaseColourArray();
         var style = this.originalStyle;
         var dict = Utils.getColourRamp(palette.colours[0], palette.colours[1]);
@@ -112,42 +105,23 @@ define([
 
         this.map.layers.items[0].loadStyle(newStyle);
 
-        this.buildingLayer.renderer = {
-          type: "simple",
-          symbol: {
-            type: "mesh-3d",
-            symbolLayers: [
-              {
-                type: "fill",
-                material: {
-                  color: dict[array[13]],
-                  colorMixMode: "replace"
-                },
-                edges: {
-                  type: "solid",
-                  color: palette.colours[2],
-                  size: 0.6
-                }
-              }
-            ]
-          }
-        };
-        this.sceneView.environment.background = {
-          type: "color",
-          color: palette.colours[2],
-        };
+        if (this.showGlobe) {
+            this.view.environment.background = {
+                type: "color",
+                color: palette.colours[2],
+            };
+        }
     }
 
-    MapController.prototype.hideMap = function(){
+    MapController.prototype.hideMap = function() {
 
     }
-    MapController.prototype.showMap = function(){
+    MapController.prototype.showMap = function() {
 
     }
 
     //Stuff to make public
     return {
         MapController: MapController
-
     };
 });
