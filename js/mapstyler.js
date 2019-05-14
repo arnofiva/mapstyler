@@ -6,7 +6,7 @@
     ], function(MapController, Palette, Portal, Utils) {
 
         //Session Variables-----------------------------------------------------------------------------
-        var mapController = new MapController.MapController("viewDiv");
+        var mapController = new MapController.MapController("viewDiv", true);
         var paletteCollection = new Object; 
         paletteCollection.palettes = new Array; //where 0 is the latest and the rest are for the undo stack
         paletteCollection.firstLoad = true;
