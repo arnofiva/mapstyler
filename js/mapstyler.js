@@ -6,7 +6,7 @@
     ], function(MapController, Palette, Portal, Utils) {
 
         //Session Variables-----------------------------------------------------------------------------
-        var mapController = new MapController.MapController("viewDiv", true);
+        var mapController = new MapController.MapController("viewDiv");
         var paletteCollection = new Object; 
         paletteCollection.palettes = new Array; //where 0 is the latest and the rest are for the undo stack
         paletteCollection.firstLoad = true;
@@ -16,12 +16,8 @@
         //Functions  -----------------------------------------------------------------------------------
 
         //Build the map and generate a palette from a random image
-        function initialise(){
-            mapController.buildMap().done(function () {
-                Portal.initPortal();
-                createRandomPalette().done(function(){                  
-                });
-            });
+        function initialise(show3D) {
+            return mapController.buildMap(show3D);
         } 
 
         //Creates a palette from a random image 
@@ -359,11 +355,25 @@
             
         });
 
-        
+        $("#show2D").click(function(){
+            initialise(false).done(function() {
+                mapController.applyPalette(getLatestPalette());
+            });
+        });
+
+        $("#show3D").click(function(){
+            initialise(true).done(function() {
+                mapController.applyPalette(getLatestPalette());
+            });
+            mapController.map.ground.surfaceColor = getLatestPalette().colours[0];
+        });
 
         //Logic ----------------------------------------------------------------------------------------
 
-        initialise();
+        initialise(false).done(function () {
+            Portal.initPortal();
+            createRandomPalette()
+        });
 
     });
 

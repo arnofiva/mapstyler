@@ -3,31 +3,31 @@ define([
     "esri/views/MapView",
     "esri/views/SceneView",
     "esri/layers/VectorTileLayer",
-    "esri/views/layers/LayerView",
-    "esri/layers/Layer",
     "esri/widgets/Search",
+    "esri/core/watchUtils",
     "modules/Utils",
     "dojo/domReady!"
-], function(Map, MapView, SceneView, VectorTileLayer, LayerView, Layer, Search, Utils) {
+], function(Map, MapView, SceneView, VectorTileLayer, Search, watchUtils, Utils) {
 
     //Constructor for a new MapController
-    var MapController = function(viewDiv, showGlobe) {
+    var MapController = function(viewDiv) {
         this.viewDiv = viewDiv;
-        this.showGlobe = showGlobe;
     }
 
     //Builds the default map
-    MapController.prototype.buildMap = function() {
+    MapController.prototype.buildMap = function(showGlobe) {
+        
         var that = this;
         var mapWait = $.Deferred();
         var item = "https://arcgis.com/sharing/rest/content/items/5ad3948260a147a993ef4865e3fad476";
         this.map = new Map();
 
-        if (this.showGlobe) {
+        if (showGlobe) {
             this.view = new SceneView({
                 container: this.viewDiv,
                 map: this.map,
                 qualityProfile: "high",
+                alphaCompositingEnabled: true,
                 environment: {
                     starsEnabled: false,
                     atmosphereEnabled: false,
@@ -35,29 +35,22 @@ define([
                         directShadowsEnabled: true,
                         cameraTrackingEnabled: true,
                         ambientOcclusionEnabled: false
+                    },
+                    background: {
+                        type: "color",
+                        color: [0, 255, 0, 0],
                     }
                 },
-                camera: {
-                    position: {
-                        spatialReference: {
-                            latestWkid: 3857,
-                            wkid: 102100
-                        },
-                        x: 1869631.2239427697,
-                        y: 3387060.2726709265,
-                        z: 2539427.781257158
-                    },
-                    heading: 341.57308435639214,
-                    tilt: 31.590472319751388
-                }
             });
+            this.view.ui.add("show2D", "top-right");
         } else {
             this.view = new MapView({
-                container: viewDiv,
+                container: this.viewDiv,
                 map: this.map,
                 zoom: 13,
                 center: [-0.010557, 51.495997]
             });
+            this.view.ui.add("show3D", "top-right");
         }
 
         var searchWidget = new Search({
@@ -76,12 +69,30 @@ define([
 
         this.map.add(tileLyr);
 
-        tileLyr.on("layerview-create", function(evt) {
-            layerView = evt.layerView;
+        this.view.whenLayerView(tileLyr).then(function(layerView) {
             //Set the original JSON style as a variable. We will need to revert to this each time we update the map's style
             that.originalStyle = JSON.stringify(layerView.layer.styleRepository.styleJSON);
             mapWait.resolve();
+
+            if (showGlobe) {
+                watchUtils.whenNotOnce(layerView, "updating", function() {
+                    that.view.goTo({
+                        position: {
+                            spatialReference: {
+                                latestWkid: 3857,
+                                wkid: 102100
+                            },
+                            x: 1869631.2239427697,
+                            y: 3387060.2726709265,
+                            z: 2539427.781257158
+                        },
+                        heading: 341.57308435639214,
+                        tilt: 31.590472319751388
+                    });
+                });
+            }
         });
+
         return mapWait.promise();
     }
 
@@ -105,11 +116,8 @@ define([
 
         this.map.layers.items[0].loadStyle(newStyle);
 
-        if (this.showGlobe) {
-            this.view.environment.background = {
-                type: "color",
-                color: palette.colours[2],
-            };
+        if (this.view.environment) {
+            this.map.ground.surfaceColor = palette.colours[0];
         }
     }
 
