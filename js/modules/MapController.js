@@ -19,7 +19,7 @@ define([
         
         var that = this;
         var mapWait = $.Deferred();
-        var item = "https://arcgis.com/sharing/rest/content/items/5ad3948260a147a993ef4865e3fad476";
+        var item = "https://arcgis.com/sharing/rest/content/items/c11ce4f7801740b2905eb03ddc963ac8";
         this.map = new Map();
 
         if (showGlobe) {
