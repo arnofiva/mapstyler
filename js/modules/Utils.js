@@ -186,17 +186,6 @@ define(["modules/color-thief.min", "modules/rainbowvis"], function() {
         return dict;
     }
 
-    function getBaseColourArray() {
-        // All colors we want to replace in the original base map
-        return ["#1d2224", "#212121", "#222628", "#262525", "#272a2b", "#292828", "#2a2b2b",
-            "#2b2e2f", "#2d2e2e", "#2f3030", "#2a2c2b", "#2d2e2e", "#2e2f2f", "#303131", "#323333",
-            "#333232", "#343635", "#353636", "#373837", "#373838", "#373938", "#383939", "#3f4040",
-            "#3a3b3a", "#3a3b3b", "#3b3b3b", "#3b3c3c", "#3c3e3d", "#404040", "#404140", "#414242",
-            "#434444", "#444545", "#4a4c4c", "#4c4d49", "#515252", "#656564", "#707374", "#727271",
-            "#808080", "#838381", "#8c8e8d", "#a3a3a1", "#d6d8d4", "#e1e3de", "#ebe8e8", "#ffffff"
-        ];
-    }
-
     //Stuff to make public
     return {
         imageToBase64: imageToBase64,
@@ -205,7 +194,6 @@ define(["modules/color-thief.min", "modules/rainbowvis"], function() {
         rgbToHex: rgbToHex,
         stringReplace: stringReplace,
         getColourRamp: getColourRamp,
-        getBaseColourArray: getBaseColourArray,
         updateCanvas: updateCanvas
     };
 
